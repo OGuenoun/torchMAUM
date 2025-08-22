@@ -1,7 +1,8 @@
 ROC_AUM_micro<-function(pred_tensor,label_tensor,counts=NULL){
   n_class=pred_tensor$size(2)
   one_hot_labels = torch::nnf_one_hot(label_tensor, num_classes=n_class) 
-  if(counts!=NULL){
+  if(!is.null(counts){
+    stopifnot(length(counts) == n_class)
     Pweights <- 1 / (counts + 1e-8)
     Pweights <- Pweights / Pweights$sum()
     Nweights <-1/(N-counts+1e-8)
