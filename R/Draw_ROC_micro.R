@@ -28,7 +28,7 @@ Draw_ROC_curve_micro <- function(pred_tensor, label_tensor){
     FPR = FPR,
     FNR = FNR
     )
-  ggplot(df, aes(x = FPR, y = 1-FNR)) +
+  ggplot(dt, aes(x = FPR, y = 1-FNR)) +
     geom_line(color = "blue", size = 1) +
     theme_minimal() +
     labs(
