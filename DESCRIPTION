@@ -16,4 +16,5 @@ URL: https://github.com/OGuenoun/torchMAUM
 BugReports: https://github.com/OGuenoun/torchMAUM/issues
 Imports:
     torch,
-    ggplot2
+    ggplot2,
+    data.table
