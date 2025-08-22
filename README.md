@@ -66,6 +66,7 @@ torch_tensor
 ```
 AUM micro:
 The AUM micro has two variants: either weighted or unweighted . To use the weighted version we need to pass the counts of each class in the dataset to the function :
+
 unweighted:
 ```r
 (torchMAUM::ROC_AUM_micro(four_pred,four_labels,counts=NULL))
@@ -79,4 +80,9 @@ weighted:
 ```r
 counts=torch::torch_tensor(c(1,2,1))
 (torchMAUM::ROC_AUM_micro(four_pred,four_labels,counts=counts))
+```
+```r
+torch_tensor
+0.0388889
+[ CPUFloatType{} ]
 ```
