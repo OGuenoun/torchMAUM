@@ -22,13 +22,13 @@ Draw_ROC_curve_micro <- function(pred_tensor, label_tensor){
   uniq_fn_before = sorted_fn_cum[sorted_fn_end]
   
   FPR = as.array(torch::torch_cat(c(torch::torch_tensor(0.0), uniq_fp_after)))
-  FNR = as.array(torch::torch_cat(c(uniq_fn_before, torch::torch_tensor(0.0))))
+  TPR = as.array(1-torch::torch_cat(c(uniq_fn_before, torch::torch_tensor(0.0))))
   
   dt=data.table::data.table(
     FPR = FPR,
-    FNR = FNR
+    TPR = TPR
     )
-  ggplot(dt, aes(x = FPR, y = 1-FNR)) +
+  ggplot(dt, aes(x = FPR, y = TPR)) +
     geom_line(color = "blue", size = 1) +
     theme_minimal() +
     labs(
