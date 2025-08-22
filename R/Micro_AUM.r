@@ -5,7 +5,7 @@ ROC_AUM_micro<-function(pred_tensor,label_tensor,counts=NULL){
     stopifnot(length(counts) == n_class)
     Pweights <- 1 / (counts + 1e-8)
     Pweights <- Pweights / Pweights$sum()
-    Nweights <-1/(N-counts+1e-8)
+    Nweights <-1/(counts$sum()-counts+1e-8)
     Nweights <-Nweights/ Nweights$sum()
   }
   else{
@@ -42,3 +42,4 @@ ROC_AUM_micro<-function(pred_tensor,label_tensor,counts=NULL){
   constant_diff = roc$min_constant[2:N]$diff()
   return(torch::torch_sum(min_FPR_FNR * constant_diff))
 }
+ROC_AUM_micro(four_pred,four_labels,counts=counts)
