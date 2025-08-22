@@ -4,10 +4,10 @@ Title:  Multi-Class Area Under the Minimum in Torch
 Version: 30.07.2025
 Encoding: UTF-8
 Authors@R: c(
-    person("Omar","Guenoun"),
+    person("Omar","Guenoun",
     email="omargue31@gmail.com",
     role=c("aut","cre")
-)
+))
 Description: Torch code for computing multi-class Area Under The Minimum,
  <https://www.jmlr.org/papers/v24/21-0751.html>, Generalization.
  Useful for optimizing Area under the curve.
