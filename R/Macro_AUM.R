@@ -1,15 +1,36 @@
 ROC_AUM_macro<-function(pred_tensor,label_tensor){
-  n_class=pred_tensor$size(2)
-  one_hot_labels = torch::nnf_one_hot(label_tensor, num_classes = n_class)
+  
+  if ((pred_tensor$ndim)==1  ) {
+    pred_tensor2 <- torch::torch_stack(
+      list(1 - pred_tensor, pred_tensor),
+      dim = 2
+    )
+    n_class <- 2
+    
+  } else {
+    if(pred_tensor$size(2)==1){
+      pred_tensor2 <-torch::torch_cat(list(1 - pred_tensor, pred_tensor),
+                                      dim = 2)
+      n_class <- 2
+    }
+    else{
+      n_class <- pred_tensor$size(2)
+      pred_tensor2 <-pred_tensor
+    }
+
+  }
+  one_hot_labels = torch::nnf_one_hot(label_tensor, num_classes=n_class) 
   is_positive = one_hot_labels
   is_negative =1-one_hot_labels
   fn_diff = -is_positive
   fp_diff = is_negative
-  thresh_tensor = -pred_tensor
+  
+  thresh_tensor = -pred_tensor2
   fn_denom = is_positive$sum(dim = 1)$clamp(min=1)
   fp_denom = is_negative$sum(dim = 1)$clamp(min=1)
   sorted_indices = torch::torch_argsort(thresh_tensor, dim = 1)
   sorted_fp_cum = torch::torch_gather(fp_diff, dim=1, index=sorted_indices)$cumsum(1)/fp_denom
+
   sorted_fn_cum = -torch::torch_gather(fn_diff, dim=1, index=sorted_indices)$flip(1)$cumsum(1)$flip(1)/fn_denom
   sorted_thresh = torch::torch_gather(thresh_tensor, dim=1, index=sorted_indices)
   zeros_vec=torch::torch_zeros(1,n_class)
