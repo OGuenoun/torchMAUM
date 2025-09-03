@@ -1,3 +1,23 @@
+#' @importFrom ggplot2 ggplot aes geom_line labs theme_minimal
+#' @import data.table
+NULL
+#' Draws multi-class ROC curve micro 
+#'
+#' This function draws one ROC curve using OvR approach and micro average. 
+#' It assumes that all the inputs are torch tensors and labels are 
+#' in [1,K] with K being the number of classes.
+#' 
+#' @param pred_tensor output of the model assuming it is of dimension NxK 
+#' (or Nx1 for binary classification)
+#' @param label_tensor true labels , tensor of length N
+#' @return plot of  the ROC curve 
+#'
+#' @examples
+#' #Small example with 3 classes and 10 samples
+#' labels=torch::torch_randint(1, 4, size = 10,dtype = torch::torch_long())
+#' Draw_ROC_curve_micro(torch::torch_randn(c(10, 3)),labels)
+#' 
+#' @export
 Draw_ROC_curve_micro <- function(pred_tensor, label_tensor){
   n_class=pred_tensor$size(2)
   one_hot_labels = torch::nnf_one_hot(label_tensor, num_classes=n_class) 

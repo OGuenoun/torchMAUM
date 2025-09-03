@@ -1,4 +1,22 @@
-ROC_AUM_micro<-function(pred_tensor,label_tensor){
+#' Compute multi-class ROC AUM micro averaged
+#'
+#' This function computes the multi class ROC AUM using OvR approach and micro 
+#' averaging. It assumes that all the inputs are torch tensors and labels are 
+#' in [1,K] with K being the number of classes.
+#' 
+#' @param pred_tensor output of the model assuming it is of dimension NxK
+#'  (or Nx1 for binary classification)
+#' @param label_tensor true labels , tensor of length N
+#' @param counts (optional) the counts of each class , tensor of length K, 
+#' used to compute weighted ROC AUM micro.
+#' @return ROC AUM micro averaged 
+#' 
+#' @examples
+#' #Small example with 3 classes and 10 samples
+#' labels=torch::torch_randint(1,4, size = 10,dtype = torch::torch_long())
+#' ROC_AUM_micro(torch::torch_randn(c(10, 3)),labels)
+#' @export
+ROC_AUM_micro<-function(pred_tensor,label_tensor,counts=NULL){
   if ((pred_tensor$ndim)==1  ) {
     pred_tensor2 <- torch::torch_stack(
       list(1 - pred_tensor, pred_tensor),
@@ -18,9 +36,21 @@ ROC_AUM_micro<-function(pred_tensor,label_tensor){
     }
     
   }
+  if(!is.null(counts)){
+    stopifnot(length(counts) == n_class)
+    Pweights <- 1 / (counts + 1e-8)
+    Pweights <- Pweights / Pweights$sum()
+    Nweights <-1/(counts$sum()-counts+1e-8)
+    Nweights <-Nweights/ Nweights$sum()
+  }
+  else{
+    Pweights<-1
+    Nweights<-1
+  }
+
   one_hot_labels = torch::nnf_one_hot(label_tensor, num_classes=n_class) 
-  is_positive = one_hot_labels
-  is_negative =1-one_hot_labels
+  is_positive = one_hot_labels*Pweights
+  is_negative =(1-one_hot_labels)*Nweights
   fn_diff = -is_positive$flatten()
   fp_diff = is_negative$flatten()
   thresh_tensor = -pred_tensor2$flatten()
@@ -42,13 +72,9 @@ ROC_AUM_micro<-function(pred_tensor,label_tensor){
   FPR = torch::torch_cat(c(torch::torch_tensor(0.0), uniq_fp_after))
   FNR = torch::torch_cat(c(uniq_fn_before, torch::torch_tensor(0.0)))
   roc = list(
-    FPR=FPR,
-    FNR=FNR,
-    TPR=1 - FNR,
     "min(FPR,FNR)"=torch::torch_minimum(FPR, FNR),
-    min_constant=torch::torch_cat(c(torch::torch_tensor(-1), uniq_thresh)),
-    max_constant=torch::torch_cat(c(uniq_thresh, torch::torch_tensor(0))))
+    min_constant=torch::torch_cat(c(torch::torch_tensor(-1), uniq_thresh)))
   min_FPR_FNR = roc[["min(FPR,FNR)"]][2:-2]
-  constant_diff = roc$min_constant[2:N]$diff()
+  constant_diff = roc$min_constant[2:-1]$diff()
   torch::torch_sum(min_FPR_FNR * constant_diff)
 }

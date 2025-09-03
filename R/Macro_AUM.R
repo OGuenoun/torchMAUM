@@ -1,5 +1,22 @@
+#' Compute multi-class ROC AUM macro averaged
+#'
+#' This function computes the multi class ROC AUM using OvR approach and macro 
+#' averaging. It assumes that all the inputs are torch tensors and labels are 
+#' in [1,K] with K being the number of classes.
+#' 
+#' @param pred_tensor output of the model assuming it is of dimension NxK 
+#' (or Nx1 for binary classification)
+#' @param label_tensor true labels , tensor of length N
+#' @return ROC AUM macro averaged 
+#' 
+#'
+#' @examples
+#' #Small example with 3 classes and 10 samples
+#' labels=torch::torch_randint(1, 4, 10,dtype = torch::torch_long())
+#' ROC_AUM_macro(torch::torch_randn(c(10, 3)),labels)
+#' 
+#' @export
 ROC_AUM_macro<-function(pred_tensor,label_tensor){
-  
   if ((pred_tensor$ndim)==1  ) {
     pred_tensor2 <- torch::torch_stack(
       list(1 - pred_tensor, pred_tensor),
@@ -47,7 +64,7 @@ ROC_AUM_macro<-function(pred_tensor,label_tensor){
   label_int <- label_tensor$to(dtype = torch::torch_int())
   actual_n_classes=torch::torch_bincount(label_int)$size(1)
   min_FPR_FNR = roc[["min(FPR,FNR)"]][2:-2,]
-  constant_diff = roc$min_constant[2:N,]$diff(dim=1)
+  constant_diff = roc$min_constant[2:-1,]$diff(dim=1)
   sum = torch::torch_sum(min_FPR_FNR * constant_diff,dim=1)
   mean=torch::torch_sum(sum)/actual_n_classes
 }

@@ -1,3 +1,20 @@
+#' Compute multi-class ROC AUC micro averaged
+#'
+#' This function computes the multi class ROC AUC using OvR approach and micro 
+#' averaging. It assumes that all the inputs are torch tensors and labels are 
+#' in [1,K] with K being the number of classes.
+#' 
+#' @param pred_tensor output of the model assuming it is of dimension NxK
+#'  (or Nx1 for binary classification)
+#' @param label_tensor true labels , tensor of length N
+#' @return ROC AUC macro averaged
+#' 
+#'
+#' @examples
+#' #Small example with 3 classes and 10 samples
+#' labels=torch::torch_randint(1, 4, size = 10,dtype = torch::torch_long())
+#' ROC_AUC_micro(torch::torch_randn(c(10, 3)),labels)
+#' @export
 ROC_AUC_micro<-function(pred_tensor,label_tensor){
   n_class=pred_tensor$size(2)
   one_hot_labels = torch::nnf_one_hot(label_tensor, num_classes=n_class) 
@@ -30,7 +47,7 @@ ROC_AUC_micro<-function(pred_tensor,label_tensor){
     "min(FPR,FNR)"=torch::torch_minimum(FPR, FNR),
     min_constant=torch::torch_cat(c(torch::torch_tensor(-1), uniq_thresh)),
     max_constant=torch::torch_cat(c(uniq_thresh, torch::torch_tensor(0))))
-  FPR_diff = roc$FPR[2:N]-roc$FPR[1:-2]
-  TPR_sum = roc$TPR[2:N]+roc$TPR[1:-2]
+  FPR_diff = roc$FPR[2:-1]-roc$FPR[1:-2]
+  TPR_sum = roc$TPR[2:-1]+roc$TPR[1:-2]
   return(torch::torch_sum(FPR_diff*TPR_sum/2.0))
 }
