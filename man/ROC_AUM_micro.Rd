@@ -12,19 +12,23 @@ ROC_AUM_micro(pred_tensor, label_tensor, counts = NULL)
 
 \item{label_tensor}{true labels , tensor of length N}
 
-\item{counts}{(optional) the counts of each class , tensor of length K, 
+\item{counts}{(optional) the counts of each class , tensor of length K,
 used to compute weighted ROC AUM micro.}
 }
 \value{
 ROC AUM micro averaged
 }
 \description{
-This function computes the multi class ROC AUM using OvR approach and micro 
-averaging. It assumes that all the inputs are torch tensors and labels are 
+This function computes the multi class ROC AUM using OvR approach and micro
+averaging. It assumes that all the inputs are torch tensors and labels are
 in [1,K] with K being the number of classes.
 }
 \examples{
-#Small example with 3 classes and 10 samples
-labels=torch::torch_randint(1,4, size = 10,dtype = torch::torch_long())
-ROC_AUM_micro(torch::torch_randn(c(10, 3)),labels)
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontrun{
+# Small example with 3 classes and 10 samples
+labels = torch::torch_randint(1, 4, size = 10, dtype = torch::torch_long())
+Draw_ROC_curve_micro(torch::torch_randn(c(10, 3)), labels)
+}
+\dontshow{\}) # examplesIf}
 }

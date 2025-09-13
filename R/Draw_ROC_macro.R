@@ -1,23 +1,25 @@
 #' @importFrom ggplot2 ggplot aes geom_line labs theme_minimal
 #' @import data.table
 NULL
-#' Draws multi-class ROC curve macro 
+#' Draws multi-class ROC curve macro
 #'
-#' This function draws K ROC curves  using OvR approach, each time 
-#' considering one class as the positive class.  
-#' It assumes that all the inputs are torch tensors and labels are 
+#' This function draws K ROC curves  using OvR approach, each time
+#' considering one class as the positive class.
+#' It assumes that all the inputs are torch tensors and labels are
 #' in [1,K] with K being the number of classes.
-#' 
+#'
 #' @param pred_tensor output of the model assuming it is of dimension NxK
 #'  (or Nx1 for binary classification)
 #' @param label_tensor true labels , tensor of length N
-#' @return K ROC curves 
-#' 
+#' @return K ROC curves
 #'
-#' @examples
-#' #Small example with 3 classes and 10 samples
-#' labels=torch::torch_randint(1, 4, size = 10,dtype = torch::torch_long())
-#' Draw_ROC_curve_macro(torch::torch_randn(c(10, 3)),labels)
+#'
+#' @examplesIf torch::torch_is_installed()
+#' \dontrun{
+#' # Small example with 3 classes and 10 samples
+#' labels = torch::torch_randint(1, 4, size = 10, dtype = torch::torch_long())
+#' Draw_ROC_curve_micro(torch::torch_randn(c(10, 3)), labels)
+#' }
 #' @export
 Draw_ROC_curve_macro<-function(pred_tensor, label_tensor){
   n_class=pred_tensor$size(2)
@@ -37,8 +39,8 @@ Draw_ROC_curve_macro<-function(pred_tensor, label_tensor){
   FPR = torch::torch_cat(c(zeros_vec, sorted_fp_cum))
   FNR = torch::torch_cat(c(sorted_fn_cum, zeros_vec))
   TPR= 1 - FNR
-  
-  fpr_mat <- torch::as_array(FPR)  
+
+  fpr_mat <- torch::as_array(FPR)
   tpr_mat <- torch::as_array(TPR)
   n_points <- dim(fpr_mat)[1]
   fpr = as.vector(fpr_mat)

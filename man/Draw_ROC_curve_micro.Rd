@@ -7,7 +7,7 @@
 Draw_ROC_curve_micro(pred_tensor, label_tensor)
 }
 \arguments{
-\item{pred_tensor}{output of the model assuming it is of dimension NxK 
+\item{pred_tensor}{output of the model assuming it is of dimension NxK
 (or Nx1 for binary classification)}
 
 \item{label_tensor}{true labels , tensor of length N}
@@ -16,13 +16,16 @@ Draw_ROC_curve_micro(pred_tensor, label_tensor)
 plot of  the ROC curve
 }
 \description{
-This function draws one ROC curve using OvR approach and micro average. 
-It assumes that all the inputs are torch tensors and labels are 
+This function draws one ROC curve using OvR approach and micro average.
+It assumes that all the inputs are torch tensors and labels are
 in [1,K] with K being the number of classes.
 }
 \examples{
-#Small example with 3 classes and 10 samples
-labels=torch::torch_randint(1, 4, size = 10,dtype = torch::torch_long())
-Draw_ROC_curve_micro(torch::torch_randn(c(10, 3)),labels)
-
+\dontshow{if (torch::torch_is_installed()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontrun{
+# Small example with 3 classes and 10 samples
+labels = torch::torch_randint(1, 4, size = 10, dtype = torch::torch_long())
+Draw_ROC_curve_micro(torch::torch_randn(c(10, 3)), labels)
+}
+\dontshow{\}) # examplesIf}
 }
