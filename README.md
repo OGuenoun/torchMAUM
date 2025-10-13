@@ -3,7 +3,7 @@ This R package provides a torch efficient extension of the AUM for multi-class c
 # Installation
 ```r
 if(!requireNamespace("remotes"))install.packages("remotes")
-  remotes::install_github("tdhock/aum")
+  remotes::install_github("OGuenoun/torchMAUM")
 ```
 # Usage 
 To extend AUM for multi-class classification , the OvR(One-Versus-Rest) approach was used , to average results , both macro and micro averages were used and there is one funtion for each averaging method( see [Scikit-learn](https://scikit-learn.org/stable/auto_examples/model_selection/plot_roc.html#) for more details and equations)
